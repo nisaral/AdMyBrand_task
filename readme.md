@@ -34,6 +34,7 @@ A professional, feature-rich analytics dashboard developed for the AI Vibe Coder
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 - **Styling**: CSS3 with CSS Variables for theming
 - **Data Visualization**: Chart.js integration
+- **Machine learning**: Linear Regression, Time Series Modeling
 - **Deployment**: Vercel
 
 ## Getting Started
