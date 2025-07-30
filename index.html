@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADmyBRAND Analytics Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/recharts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-border: rgba(148, 163, 184, 0.2);
+            --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Light theme background */
+        body:not(.dark) {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+
+        /* Dark theme background */
+        .dark body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+
+        /* Animated Background - More Professional */
+        .animated-bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: -10;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            transition: all 0.3s ease;
+        }
+
+        .dark .orb {
+            opacity: 0.2;
+        }
+
+        .orb-1 {
+            top: 20%;
+            left: 20%;
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            top: 60%;
+            right: 20%;
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(45deg, var(--accent-green), var(--accent-blue));
+            animation: float-delayed 10s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            bottom: 20%;
+            left: 40%;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, var(--accent-orange), var(--accent-green));
+            animation: float-slow 12s ease-in-out infinite;
+        }
+
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--border-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .dark .grid-bg {
+            opacity: 0.1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(-5deg); }
+        }
+
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(3deg); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.3); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(20px);
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            padding: 8px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .logo-text p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-btn, .btn {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover, .theme-btn:hover {
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 96px 0;
+        }
+
+        .hero h2 {
+            font-size: clamp(48px, 8vw, 112px);
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--text-primary), var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 24px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 768px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Grid Layouts */
+        .metrics-grid {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            margin-bottom: 48px;
+        }
+
+        .charts-grid {
+            display: grid;
+            gap: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            margin-bottom: 48px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Cards */
+        .card {
+            position: relative;
+            border-radius: 24px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-blue);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .card:hover::before {
+            opacity: 0.05;
+        }
+
+        .card-header, .card-content {
+            padding: 32px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-content {
+            padding-top: 0;
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .metric-content {
+            position: relative;
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .metric-icon {
+            padding: 16px;
+            border-radius: 16px;
+            transition: all 0.5s;
+            color: white;
+        }
+
+        .card:hover .metric-icon {
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        .metric-change {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .change-increase {
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .change-decrease {
+            color: var(--accent-red);
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--text-primary);
+            transition: all 0.5s;
+            margin-bottom: 8px;
+        }
+
+        .card:hover .metric-value {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-title {
+            color: var(--text-secondary);
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .card:hover .metric-title {
+            color: var(--text-primary);
+        }
+
+        /* Chart Containers */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 16px;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .chart-icon {
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .chart-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .chart-description {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Table Styles */
+        .table-header {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .table-title-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .table-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding-left: 48px;
+            width: 300px;
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+        }
+
+        .select {
+            height: 48px;
+            padding: 0 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            text-align: left;
+            padding: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .table th:hover {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .table tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .table tr:hover td {
+            color: var(--accent-blue);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .status-paused {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-orange);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 32px;
+        }
+
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple));
+            border-color: transparent;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 96px 0;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 16px;
+            }
+            
+            .container {
+                padding: 0 16px;
+            }
+            
+            .hero {
+                padding: 48px 0;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .nav-actions .live-indicator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="grid-bg"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3v18h18" />
+                        <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>ADmyBRAND</h1>
+                    <p>Analytics Dashboard</p>
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-btn" onclick="toggleTheme()">
+                    <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+                
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    Live Data
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h2>Performance Dashboard</h2>
+            <p>Real-time insights powered by AI to drive your marketing success with professional analytics</p>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid" id="metrics-grid">
+            <!-- Metrics will be populated by JavaScript -->
+        </div>
+
+        <!-- Revenue Forecast Chart -->
+        <div class="card full-width" style="margin-bottom: 48px;">
+            <div class="card-header">
+                <div class="chart-header">
+                    <div class="chart-icon" style="background: linear-gradient(45deg, #3b82f6, #8b5cf6);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="chart-title">Revenue Forecast (AI-Powered)</div>
+                        <div class="chart-description">ML model prediction based on historical data and market trends</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <canvas id="revenueChart" class="chart-container"></canvas>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="chart-header">
+                        <div class="chart-icon" style="background: linear-gradient(45deg, #8b5cf6, #ec4899);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6"/>
+                                <path d="m21 12-6-3-6 3-6-3"/>
+                            </svg>
+                        </div>
+                        <div class="chart-title">Conversions by Channel</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <canvas id="pieChart" class="chart-container"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="chart-header">
+                        <div class="chart-icon" style="background: linear-gradient(45deg, #10b981, #14b8a6);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="chart-title">Weekly Traffic Analysis</div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <canvas id="barChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign Data Table -->
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="table-header">
+                    <div class="table-title-section">
+                        <div class="chart-icon" style="background: linear-gradient(45deg, #f97316, #dc2626);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="chart-title">Campaign Performance</div>
+                            <div class="chart-description">Detailed view of all marketing campaigns</div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-controls">
+                        <div class="search-container">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                            <input type="text" class="search-input" placeholder="Search campaigns..." id="searchInput">
+                        </div>
+                        <select class="select" id="statusFilter">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="paused">Paused</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <button class="btn" onclick="exportToCsv()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('name')">Campaign</th>
+                                <th onclick="sortTable('status')">Status</th>
+                                <th onclick="sortTable('startDate')">Start Date</th>
+                                <th onclick="sortTable('budget')">Budget</th>
+                                <th onclick="sortTable('conversions')">Conversions</th>
+                                <th onclick="sortTable('ctr')">CTR</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campaignTableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 ADmyBRAND Insights. Powered by AI & Machine Learning.</p>
+        </div>
+    </main>
+
+    <script>
+        // Data
+        const data = {
+            metrics: [
+                { id: "revenue", title: "Total Revenue", value: "$324,540", change: "+15.2%", changeType: "increase", gradient: "linear-gradient(45deg, #10b981, #14b8a6)" },
+                { id: "users", title: "New Customers", value: "1,230", change: "+8.5%", changeType: "increase", gradient: "linear-gradient(45deg, #3b82f6, #6366f1)" },
+                { id: "conversions", title: "Conversion Rate", value: "4.8%", change: "-0.5%", changeType: "decrease", gradient: "linear-gradient(45deg, #8b5cf6, #ec4899)" },
+                { id: "spend", title: "Ad Spend", value: "$21,890", change: "+20%", changeType: "increase", gradient: "linear-gradient(45deg, #f97316, #dc2626)" }
+            ],
+            revenueForecastData: [
+                { name: "Jan", revenue: 3869, forecast: null },
+                { name: "Feb", revenue: 4019, forecast: null },
+                { name: "Mar", revenue: 4952, forecast: null },
+                { name: "Apr", revenue: 5118, forecast: null },
+                { name: "May", revenue: 5233, forecast: null },
+                { name: "Jun", revenue: 5549, forecast: null },
+                { name: "Jul", revenue: 6032, forecast: null },
+                { name: "Aug", revenue: null, forecast: 6393 },
+                { name: "Sep", revenue: null, forecast: 6711 },
+                { name: "Oct", revenue: null, forecast: 7029 }
+            ],
+            campaigns: [
+                { id: "CAM001", name: "Summer Sale 2024", status: "Completed", startDate: "2024-05-10", budget: 12574, conversions: 314, ctr: "3.2%" },
+                { id: "CAM002", name: "Brand Awareness Q3", status: "Active", startDate: "2024-07-28", budget: 3689, conversions: 88, ctr: "2.8%" },
+                { id: "CAM003", name: "Flash Promo Week", status: "Completed", startDate: "2024-04-12", budget: 9638, conversions: 240, ctr: "4.1%" },
+                { id: "CAM004", name: "Product Launch", status: "Active", startDate: "2024-07-15", budget: 8403, conversions: 105, ctr: "2.1%" },
+                { id: "CAM005", name: "Holiday Campaign", status: "Paused", startDate: "2023-11-20", budget: 5377, conversions: 40, ctr: "1.8%" },
+                { id: "CAM006", name: "Back to School", status: "Completed", startDate: "2023-09-01", budget: 13242, conversions: 441, ctr: "5.2%" },
+                { id: "CAM007", name: "Summer Collection", status: "Active", startDate: "2024-06-10", budget: 14289, conversions: 249, ctr: "3.8%" }
+            ],
+            conversionsByChannel: [
+                { channel: "Organic", conversions: 4200, color: "#10b981" },
+                { channel: "Social", conversions: 2800, color: "#3b82f6" },
+                { channel: "Referral", conversions: 1500, color: "#8b5cf6" },
+                { channel: "Email", conversions: 1200, color: "#f59e0b" },
+                { channel: "Paid", conversions: 3500, color: "#ef4444" }
+            ],
+            trafficData: [
+                { name: 'Mon', visits: 2400, pageViews: 4800 },
+                { name: 'Tue', visits: 3200, pageViews: 6100 },
+                { name: 'Wed', visits: 2800, pageViews: 5400 },
+                { name: 'Thu', visits: 3900, pageViews: 7200 },
+                { name: 'Fri', visits: 4100, pageViews: 7800 },
+                { name: 'Sat', visits: 2900, pageViews: 5600 },
+                { name: 'Sun', visits: 2200, pageViews: 4200 }
+            ]
+        };
+
+        // State management
+        let currentPage = 1;
+        let sortConfig = { key: 'startDate', direction: 'desc' };
+        let filterText = '';
+        let statusFilter = 'all';
+        const itemsPerPage = 5;
+
+        // Initialize particles
+        function createParticles() {
+            const bg = document.querySelector('.animated-bg');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+                bg.appendChild(particle);
+            }
+        }
+
+        // Theme toggle - Fixed implementation
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                // Switch to light theme
+                html.classList.remove('dark');
+                body.classList.remove('dark');
+                
+                // Update icon to moon for light theme
+                themeIcon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                `;
+            } else {
+                // Switch to dark theme
+                html.classList.add('dark');
+                body.classList.add('dark');
+                
+                // Update icon to sun for dark theme
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                `;
+            }
+        }
+
+        // Render metrics
+        function renderMetrics() {
+            const grid = document.getElementById('metrics-grid');
+            grid.innerHTML = data.metrics.map((metric, index) => `
+                <div class="card metric-card" style="animation-delay: ${index * 150}ms; animation: slideInUp 0.8s ease-out forwards;" onmousemove="handleMetricMouseMove(event, this)" onmouseleave="handleMetricMouseLeave(this)">
+                    <div class="card-content">
+                        <div style="position: absolute; inset: 0; background: ${metric.gradient}; opacity: 0.05; border-radius: 24px; transition: opacity 0.5s;"></div>
+                        <div class="metric-content">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: ${metric.gradient};">
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        ${getIconSVG(metric.id)}
+                                    </svg>
+                                </div>
+                                <div class="metric-change ${metric.changeType === 'increase' ? 'change-increase' : 'change-decrease'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        ${metric.changeType === 'increase' ? 
+                                            '<path d="M7 17l9.2-9.2M17 17V7M17 7H7"/>' : 
+                                            '<path d="M17 7l-9.2 9.2M7 7v10M7 7h10"/>'
+                                        }
+                                    </svg>
+                                    ${metric.change}
+                                </div>
+                            </div>
+                            <div class="metric-value">${metric.value}</div>
+                            <div class="metric-title">${metric.title}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getIconSVG(id) {
+            const icons = {
+                revenue: '<circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6"/>',
+                users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+                conversions: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+                spend: '<path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>'
+            };
+            return icons[id] || icons.revenue;
+        }
+
+        // 3D mouse effect for metric cards
+        function handleMetricMouseMove(e, card) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+        }
+
+        function handleMetricMouseLeave(card) {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+        }
+
+        // Chart rendering functions
+        function renderCharts() {
+            renderRevenueChart();
+            renderPieChart();
+            renderBarChart();
+        }
+
+        function renderRevenueChart() {
+            const canvas = document.getElementById('revenueChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const padding = 60;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const allData = data.revenueForecastData;
+            const maxValue = Math.max(...allData.map(d => d.revenue || d.forecast || 0));
+            const minValue = Math.min(...allData.map(d => d.revenue || d.forecast || 0).filter(v => v > 0));
+
+            // Get CSS custom properties for colors
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            // Draw grid
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw revenue line
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            let started = false;
+            
+            allData.forEach((point, index) => {
+                if (point.revenue !== null) {
+                    const x = padding + (chartWidth / (allData.length - 1)) * index;
+                    const y = padding + chartHeight - ((point.revenue - minValue) / (maxValue - minValue)) * chartHeight;
+                    
+                    if (!started) {
+                        ctx.moveTo(x, y);
+                        started = true;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+            });
+            ctx.stroke();
+
+            // Draw forecast line
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.setLineDash([8, 8]);
+            ctx.beginPath();
+            started = false;
+            
+            allData.forEach((point, index) => {
+                if (point.forecast !== null) {
+                    const x = padding + (chartWidth / (allData.length - 1)) * index;
+                    const y = padding + chartHeight - ((point.forecast - minValue) / (maxValue - minValue)) * chartHeight;
+                    
+                    if (!started) {
+                        ctx.moveTo(x, y);
+                        started = true;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw labels
+            ctx.fillStyle = textColor;
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            
+            allData.forEach((point, index) => {
+                const x = padding + (chartWidth / (allData.length - 1)) * index;
+                ctx.fillText(point.name, x, canvas.height - 20);
+            });
+        }
+
+        function renderPieChart() {
+            const canvas = document.getElementById('pieChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 40;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const total = data.conversionsByChannel.reduce((sum, item) => sum + item.conversions, 0);
+            let currentAngle = -Math.PI / 2;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#ffffff' : '#1e293b';
+
+            data.conversionsByChannel.forEach((item, index) => {
+                const sliceAngle = (item.conversions / total) * 2 * Math.PI;
+                
+                // Draw slice
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = item.color;
+                ctx.fill();
+
+                // Draw label
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelX = centerX + Math.cos(labelAngle) * (radius + 30);
+                const labelY = centerY + Math.sin(labelAngle) * (radius + 30);
+                
+                ctx.fillStyle = textColor;
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${item.channel}`, labelX, labelY);
+                ctx.fillText(`${Math.round((item.conversions / total) * 100)}%`, labelX, labelY + 16);
+
+                currentAngle += sliceAngle;
+            });
+        }
+
+        function renderBarChart() {
+            const canvas = document.getElementById('barChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const padding = 60;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const maxValue = Math.max(...data.trafficData.flatMap(d => [d.visits, d.pageViews]));
+            const barWidth = chartWidth / (data.trafficData.length * 2.5);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            data.trafficData.forEach((item, index) => {
+                const x = padding + (chartWidth / data.trafficData.length) * index;
+                
+                // Visits bar
+                const visitsHeight = (item.visits / maxValue) * chartHeight;
+                ctx.fillStyle = '#3b82f6';
+                ctx.fillRect(x, padding + chartHeight - visitsHeight, barWidth, visitsHeight);
+                
+                // Page views bar
+                const pageViewsHeight = (item.pageViews / maxValue) * chartHeight;
+                ctx.fillStyle = '#8b5cf6';
+                ctx.fillRect(x + barWidth + 5, padding + chartHeight - pageViewsHeight, barWidth, pageViewsHeight);
+                
+                // Label
+                ctx.fillStyle = textColor;
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.name, x + barWidth, canvas.height - 20);
+            });
+        }
+
+        // Table functions
+        function getFilteredAndSortedData() {
+            let filtered = data.campaigns.filter(item => 
+                item.name.toLowerCase().includes(filterText.toLowerCase()) && 
+                (statusFilter === 'all' || item.status.toLowerCase() === statusFilter.toLowerCase())
+            );
+            
+            if (sortConfig.key) {
+                filtered.sort((a, b) => {
+                    let aVal = a[sortConfig.key];
+                    let bVal = b[sortConfig.key];
+                    
+                    if (sortConfig.key === 'startDate') {
+                        aVal = new Date(aVal);
+                        bVal = new Date(bVal);
+                    }
+                    
+                    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+            
+            return filtered;
+        }
+
+        function renderTable() {
+            const filteredData = getFilteredAndSortedData();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+            
+            const tbody = document.getElementById('campaignTableBody');
+            tbody.innerHTML = paginatedData.map((campaign, index) => `
+                <tr style="animation-delay: ${index * 100}ms; animation: slideInLeft 0.6s ease-out forwards;">
+                    <td>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">${campaign.name}</div>
+                            <div style="font-size: 14px; opacity: 0.7;">${campaign.id}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${campaign.status.toLowerCase()}">
+                            ${campaign.status}
+                        </span>
+                    </td>
+                    <td style="font-weight: 500;">${campaign.startDate}</td>
+                    <td style="font-weight: 600;">${campaign.budget.toLocaleString()}</td>
+                    <td style="font-weight: 600;">${campaign.conversions}</td>
+                    <td style="font-weight: 600;">${campaign.ctr}</td>
+                </tr>
+            `).join('');
+            
+            renderPagination(filteredData.length);
+        }
+
+        function renderPagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            const startItem = (currentPage - 1) * itemsPerPage + 1;
+            const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+            
+            pagination.innerHTML = `
+                <div class="pagination-info">
+                    Showing ${startItem} to ${endItem} of ${totalItems} campaigns
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15,18 9,12 15,6"/>
+                        </svg>
+                    </button>
+                    ${Array.from({ length: totalPages }, (_, i) => 
+                        `<button class="page-btn ${currentPage === i + 1 ? 'active' : ''}" onclick="changePage(${i + 1})">${i + 1}</button>`
+                    ).join('')}
+                    <button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9,18 15,12 9,6"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        function sortTable(key) {
+            if (sortConfig.key === key) {
+                sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortConfig.key = key;
+                sortConfig.direction = 'asc';
+            }
+            currentPage = 1;
+            renderTable();
+        }
+
+        function changePage(page) {
+            const filteredData = getFilteredAndSortedData();
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+            }
+        }
+
+        function exportToCsv() {
+            const headers = ['ID', 'Name', 'Status', 'Start Date', 'Budget', 'Conversions', 'CTR'];
+            const filteredData = getFilteredAndSortedData();
+            const csvRows = [
+                headers.join(','),
+                ...filteredData.map(row => [
+                    row.id,
+                    `"${row.name}"`,
+                    row.status,
+                    row.startDate,
+                    row.budget,
+                    row.conversions,
+                    row.ctr
+                ].join(','))
+            ];
+            
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'campaigns.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterText = e.target.value;
+            currentPage = 1;
+            renderTable();
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', (e) => {
+            statusFilter = e.target.value;
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Resize handler for charts
+        window.addEventListener('resize', () => {
+            setTimeout(() => {
+                renderCharts();
+            }, 100);
+        });
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Simulate loading
+            setTimeout(() => {
+                renderMetrics();
+                renderCharts();
+                renderTable();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
