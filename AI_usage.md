@@ -1,0 +1,6 @@
+# AI Usage Report
+
+My workflow for this project heavily integrated AI tools, primarily ChatGPT-4 for architecture and complex logic, and GitHub Copilot for in-editor assistance.
+The process began with data simulation and modeling. I tasked ChatGPT-4 with generating a Python script using scikit-learn and pandas. This script created a realistic marketing dataset and trained a linear regression model to produce the AI-powered revenue forecast, a core feature of the dashboard. The AI generated the entire script, which I executed to get the final JSON data, effectively simulating a data science backend process.
+For the frontend, AI significantly accelerated development. I used prompts to generate the initial HTML5 structure and the complex CSS for the glassmorphism theme, including the animated background and CSS variables for theming. The core vanilla JavaScript logic for the interactive data table—handling multi-column sorting, status filtering, and pagination—was also scaffolded by AI.
+While AI handled the heavy lifting for algorithms and boilerplate, my role was to manually refine the UI for a polished aesthetic, debug cross-browser inconsistencies, and integrate all the AI-generated parts into a cohesive, performant application. This synergy allowed for rapid development without sacrificing quality.
